@@ -1,8 +1,12 @@
-FROM php:8.5-fpm-alpine
+FROM php:8.4-fpm-alpine
 
-# Cài extensions cần thiết
-RUN apk add --no-cache nginx supervisor curl zip unzip git \
-    && docker-php-ext-install pdo pdo_mysql opcache bcmath
+# Cài build deps + runtime deps
+RUN apk add --no-cache \
+    nginx supervisor curl zip unzip git \
+    linux-headers \
+    $PHPIZE_DEPS \
+    && docker-php-ext-install pdo pdo_mysql opcache bcmath \
+    && apk del $PHPIZE_DEPS
 
 # Cài Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
